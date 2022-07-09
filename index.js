@@ -1,40 +1,22 @@
 const {ApolloServer, gql} = require ("apollo-server");
 
-const typeDefs = gql`
-  type Book {
-    title: String
-    author: String
-  }
-  type Query {
-    books: [Book]
-  }
-`;
+const fs = require("fs");
+const path  = require("path");
 
-const resolvers = {
-    Query: {
-      books: () => books,
-    },
-  };
+const posts =require("./DB");
+const resolvers = require("./resolvers");
 
-const books = [
-    {
-      title: 'The Awakening',
-      author: 'Kate Chopin',
-    },
-    {
-      title: 'City of Glass',
-      author: 'Paul Auster',
-    },
-  ];
+
+
+const theSchema = fs.readFileSync(path.join(__dirname,"./schema.graphqls"), "utf8");
+const typeDefs = gql(theSchema);
+
 
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    csrfPrevention: true,
-    cache: 'bounded',
   });
   
-  // The `listen` method launches a web server.
   server.listen(4000).then(() => {
     console.log(`🚀  Server ready at http://localhost:4000/`);
   });
